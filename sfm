@@ -1,0 +1,47 @@
+station=""
+
+if [[ -z ${1} ]]; then
+	echo "please provide a station"
+	exit 0
+fi
+
+case ${1} in
+	ds)
+		station="deepspaceone.pls";;
+	dz)
+		station="dronezone.pls";;
+	gc)
+		station="gsclassic.pls";;
+	g)
+		station="groovesalad.pls";;
+	l)
+		station="lush.pls";;
+	m)
+		station="metal.pls";;
+	dc)
+		station="defcon.pls";;
+	ss)
+		station="spacestation.pls";;
+	u8)
+		station="u80s.pls";;
+	f)
+		station="fluid.pls";;
+	b)
+		station="beatblender.pls";;
+	db)
+		station="dubstep.pls";;
+	v)
+		station="vaporwaves.pls";;	
+	r)
+		station="reggae256.pls";;
+	su)
+		station="sonicuniverse.pls";;
+	sn)
+		station="synphaera256.pls";;
+	tt)
+		station="thetrip.pls";;
+	*)
+		station="${1}.pls";;	
+esac
+
+cvlc -I lua https://somafm.com/${station}

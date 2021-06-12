@@ -1,0 +1,13 @@
+#
+t="/srv/www/thesite/public/t"
+scp hb:$t ~/do.remote
+if [ -s ~/do.remote ]
+then
+	cp ~/do ~/do.prev
+	cat ~/do.remote > ~/do
+	echo "" >> ~/do
+	cat ~/do.prev >> ~/do 
+	rm ~/do.remote
+	rm ~/do.prev
+fi
+ssh hb "echo '' >> $t.bak; cat $t >> $t.bak; rm $t; touch $t; chmod a+w $t; sudo chown www-data:www-data $t"

@@ -1,0 +1,8 @@
+n=`ls -f ~/img/wallpapers | wc -l`
+echo "$n"
+i=`shuf -i 0-$n -n 1`
+files=(~/img/wallpapers/*)
+export DISPLAY=":0.0"
+`nitrogen --head=0 --set-scaled ${files[i]}`
+i=`shuf -i 0-$n -n 1`
+`nitrogen --head=1 --set-scaled ${files[i]}`

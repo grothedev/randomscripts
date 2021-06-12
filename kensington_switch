@@ -1,0 +1,6 @@
+id_dev=`xinput list | grep Kensington | awk '{ print $7 }' | sed 's/id=//g'`
+id_prop=`xinput --list-props $id_dev | grep "libinput Left Handed Enabled (" | sed 's/libinput Left Handed Enabled (//g' | sed 's/).*//g'`
+echo $id_dev', '$id_prop
+xinput --set-prop $id_dev $id_prop 1
+
+

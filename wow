@@ -1,0 +1,17 @@
+#!/bin/bash
+#Words Of Wisdom
+# output some random text from my journal 
+
+
+
+files=(~/_journal ~/_poetry ~/doc/_journal_2019) #TODO other files
+n=${#files[@]}
+n=$(($n-1))
+f=${files[`shuf -i 0-${n} -n 1`]}
+l=`wc -l ${f} | cut -f1 -d' '`
+t=''
+while [[ ! "$t" =~ ^[a-zA-Z0-9] || "$t" =~ ^[0-9] ]]; do 
+	i=`shuf -i 0-${l} -n 1`
+	t=`sed -n ${i}p ${f}`
+done
+echo ${t}

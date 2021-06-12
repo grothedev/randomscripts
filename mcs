@@ -1,0 +1,1 @@
+mcrcon -p $MC_ADMINPASS -H $MC_HOST $1

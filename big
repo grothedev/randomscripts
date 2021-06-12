@@ -1,0 +1,6 @@
+
+if [ -z ${2} ]; then
+	du -ah ${1} | sort -n -r | head -n 15
+else
+	du -ah ${1} | sort -n -r | head -n ${2}
+fi

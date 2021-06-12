@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#a simple backup script that uses rsync
+
+if [[ -z $1 ]]; then
+	echo 'you must at least provide a source dir'
+	exit 0
+fi
+
+src=$1
+dest='hb:/var/stor/personal/backup/'
+rsargs=''
+
+if [[ $2 ]]; then
+	echo 'using destination '${2}
+	dest="thomas@hb:"${2}
+fi
+
+if [[ $3 ]]; then
+	shift 2
+	rsargs=${@}	
+fi
+
+
+remote_host=`echo $dest | cut -f1 -d':'`
+#dest_path_dir=`echo $dest | cut -f2 -d':' | sed 's,\(.*\)\/$,\1\/,g'` #directory right above the file/directory of interest
+dest_path_dir=`echo $dest | sed 's,\(.*\)\/.*,\1\/,g'` #directory right above the file/directory of interest
+ssh ${remote_host} "mkdir -p ${dest_path_dir}"
+
+if [[ $(rsync -arvzP -e ssh --update ${src} ${dest} ${rsargs} | grep "%") ]]; then
+	echo "Complete."
+else
+	echo "!! ${src} not uploaded. Server version is newer."
+fi

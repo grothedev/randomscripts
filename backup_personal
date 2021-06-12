@@ -1,0 +1,59 @@
+#!/bin/bash
+#this script backs up personal documents to the vps and personal server
+
+echo -e "backing up files $(date) \n" >> ~/.backuplog
+
+excluded=''
+src=''
+force=0
+excluded_list=""
+rsync_args=""
+ip='hb'
+home="/home/thomas/"
+user="thomas"
+
+while getopts ":x:p:f:l:d:" opt; do
+ case $opt in
+  x)
+   echo "excluding files/dirs $OPTARG"
+   excluded="$OPTARG"
+   rsync_args=$rsync_args"--exclude $OPTARG "
+   ;;
+  l)
+   echo "exluding files/dirs from list from file $OPTARG"
+   excluded_list="\"$OPTARG\""
+   rsync_args=$rsync_args"--exclude-from $OPTARG "
+   ;;
+  p)
+   echo "backing up path $OPTARG"
+   src="$OPTARG"
+   ;;
+  f)
+   echo "forcing backup of entire home dir.\n"
+   force=1
+   ;;
+  d)
+   echo "destination address = $OPTARG"
+   ip="$OPTARG"
+   ;;
+ esac
+done
+
+echo $rsync_args
+
+if  [ -z "$src" ]
+then
+ if [[ $force == 1 ]]
+ then
+  echo "-f set, so will backup entire home dir.\n"
+  rsync -avzpR -e ssh ${home}/ ${user}@"$ip":backup | tee -a ~/.backuplog
+ else
+  echo "no custom path given. will do nothing.\n"
+  exit 0
+ fi
+else
+ #rsync -avzp -e ssh --exclude-from "$excluded_list" --exclude $excluded /home/thomas/$src/ thomas@grothe.ddns.net:backup/$src | tee -a ~/.backuplog
+ rsync -avzpP --relative -e ssh $rsync_args ${home}/./$src/ ${user}@"$ip":backup/ | tee -a ~/.backuplog
+fi
+
+

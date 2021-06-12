@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "[Path]" | sudo tee /etc/systemd/system/datasync.path
+
+for f in `cat ~/.config/datasync/files`; do
+	f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+	echo "PathChanged="${f} | sudo tee -a /etc/systemd/system/datasync.path
+done

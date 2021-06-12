@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+#backs up commonly modified files
+for f in `cat ~/.config/datasync/files`; do
+	f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+	echo $f
+	backup_simple ${f} ${f}
+done

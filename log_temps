@@ -1,0 +1,4 @@
+d=`date +%Y-%m-%d - %H:%M:%S`
+echo "$d" >> /var/log/sensor_temps.log
+sensors >> /var/log/sensor_temps.log
+
