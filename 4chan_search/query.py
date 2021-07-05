@@ -60,5 +60,5 @@ else:
     processCatalog(json.loads(res.text), bod)
 
 
-for url in results_img:
+for url in results_url:
     print(url)

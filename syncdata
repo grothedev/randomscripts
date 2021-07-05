@@ -3,7 +3,11 @@
 
 #backs up commonly modified files
 for f in `cat ~/.config/datasync/files`; do
-	f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
-	echo $f
-	backup_simple ${f} ${f}
+	rt=`ssh hb "date -r ~/img +%s"`
+	lt=`date -r ~/img +%s`
+	if [[ ${lt} != ${rt} && ${lt} -ge ${rt} ]]; then #local file is newer, so update
+		f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+		echo $f
+		backup_simple ${f} ${f}
+	fi
 done

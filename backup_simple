@@ -26,9 +26,9 @@ remote_host=`echo $dest | cut -f1 -d':'`
 #dest_path_dir=`echo $dest | cut -f2 -d':' | sed 's,\(.*\)\/$,\1\/,g'` #directory right above the file/directory of interest
 dest_path_dir=`echo $dest | sed 's,\(.*\)\/.*,\1\/,g'` #directory right above the file/directory of interest
 ssh ${remote_host} "mkdir -p ${dest_path_dir}"
-
-if [[ $(rsync -arvzP -e ssh --update ${src} ${dest} ${rsargs} | grep "%") ]]; then
-	echo "Complete."
-else
-	echo "!! ${src} not uploaded. Server version is newer."
-fi
+rsync -arvzP -e ssh --update ${src} ${dest} ${rsargs} >> /var/log/datasync.log
+#if [[ TODO "%"` ]]; then
+#	echo "Complete."
+#else
+#	echo "!! ${src} not uploaded. Server version is newer."
+#fi

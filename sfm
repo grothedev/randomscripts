@@ -40,6 +40,8 @@ case ${1} in
 		station="synphaera256.pls";;
 	tt)
 		station="thetrip.pls";;
+	7)
+		station="seventies.pls";;
 	*)
 		station="${1}.pls";;	
 esac

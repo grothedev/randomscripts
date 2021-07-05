@@ -5,6 +5,9 @@
 
 
 files=(~/_journal ~/_poetry ~/doc/_journal_2019) #TODO other files
+if [[ $1 == "-o" ]]; then
+	files+=("~/doc/daily-writings/comp")
+fi
 n=${#files[@]}
 n=$(($n-1))
 f=${files[`shuf -i 0-${n} -n 1`]}

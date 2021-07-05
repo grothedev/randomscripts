@@ -1,8 +1,17 @@
 #!/bin/bash
 
+echo "[Unit]" | sudo tee /etc/systemd/system/datasync.path
+echo "Wants=datasync.service" | sudo tee /etc/systemd/system/datasync.path
+echo "" | sudo tee /etc/systemd/system/datasync.path
 echo "[Path]" | sudo tee /etc/systemd/system/datasync.path
 
 for f in `cat ~/.config/datasync/files`; do
 	f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
 	echo "PathChanged="${f} | sudo tee -a /etc/systemd/system/datasync.path
 done
+
+echo "Unit=datasync.service" | sudo tee /etc/systemd/system/datasync.path
+echo "" | sudo tee /etc/systemd/system/datasync.path
+echo "[Install]" | sudo tee /etc/systemd/system/datasync.path
+echo "WantedBy=datasync.service" | sudo tee /etc/systemd/system/datasync.path
+
