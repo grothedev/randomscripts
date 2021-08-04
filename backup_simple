@@ -8,7 +8,8 @@ if [[ -z $1 ]]; then
 fi
 
 src=$1
-dest='hb:/var/stor/personal/backup/'
+#dest='hb:/var/stor/personal/backup/'
+dest="hb:"$HB_BACKUP_DIR
 rsargs=''
 
 if [[ $2 ]]; then
