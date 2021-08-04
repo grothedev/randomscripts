@@ -46,14 +46,14 @@ then
  if [[ $force == 1 ]]
  then
   echo "-f set, so will backup entire home dir.\n"
-  rsync -avzpR -e ssh ${home}/ ${user}@"$ip":backup | tee -a ~/.backuplog
+  rsync -avzpR -e ssh ${home}/ ${user}@${ip}:backup | tee -a ~/.backuplog
  else
   echo "no custom path given. will do nothing.\n"
   exit 0
  fi
 else
  #rsync -avzp -e ssh --exclude-from "$excluded_list" --exclude $excluded /home/thomas/$src/ thomas@grothe.ddns.net:backup/$src | tee -a ~/.backuplog
- rsync -avzpP --relative -e ssh $rsync_args ${home}/./$src/ ${user}@"$ip":backup/ | tee -a ~/.backuplog
+ rsync -avzpP --relative -e ssh $rsync_args ${home}/./${src}/ ${user}@${ip}:${HB_BACKUP_DIR} | tee -a ~/.backuplog
 fi
 
 
