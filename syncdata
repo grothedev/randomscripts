@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#only continue if the server is reachable
+statuscheck=`ssh hb 2>&1`
+if [[ $statuscheck == *onnect* ]]; then
+	exit 1
+fi
 
 #backs up commonly modified files
 for f in `cat ~/.config/datasync/files`; do
