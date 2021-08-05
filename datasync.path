@@ -1,0 +1,15 @@
+[Unit]
+Wants=datasync.service
+
+[Path]
+PathModified=/home/thomas/doc/blog/
+PathModified=/home/thomas/img/
+PathModified=/home/thomas/_journal
+PathModified=/home/thomas/lmms/projects/
+PathModified=/home/thomas/do
+PathModified=/home/thomas/_poetry
+PathModified=/home/thomas/aud/me/fragments-album-forreal-2018/
+Unit=datasync.service
+
+[Install]
+WantedBy=datasync.service

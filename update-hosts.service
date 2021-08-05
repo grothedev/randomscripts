@@ -1,0 +1,10 @@
+[Unit]
+Description=updates /etc/hosts with my custom hosts
+Requires=network-online.target
+After=multi-user.target
+
+[Service]
+Type=simple
+#ExecStartPre=/bin/sleep 45
+ExecStart=sudo /usr/local/bin/update_hosts
+User=root

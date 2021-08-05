@@ -1,0 +1,12 @@
+[Unit]
+Description=backs up commonly modified files
+Requires=network-online.target
+After=multi-user.target
+
+[Service]
+Type=simple
+#ExecStartPre=/bin/sleep 45
+ExecStart=/usr/local/bin/syncdata
+User=thomas
+Restart=on-failure
+RestartSec=120s

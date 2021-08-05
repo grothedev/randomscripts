@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# this script updates hosts in /etc/hosts
+# currently the only applicable host is my homeserver (local or remote ip)
+
+localcheck=`nmap -sn 192.168.1.0/24 | grep debian`
+
+if [[ $localcheck ]]; then
+	hb_ip=`echo $localcheck | sed 's/.*(\(.*\))/\1/g'`
+else
+	hb_ip=`ping grothe.ddns.net -c  1 | sed 's/bytes from.*(\(.*\)).*/\1/g'`
+fi
+
+sed -i 's/'${hb_ip}'.*//g'
+echo '${hb_ip}	hb' >> /etc/hosts
+
