@@ -2,7 +2,10 @@
 #Words Of Wisdom
 # output some random text from my journal 
 
-
+r=5
+if [[ $1 ]]; then
+	r=$1
+fi
 
 files=(~/_journal ~/_poetry ~/doc/_journal_2019) #TODO other files
 if [[ $1 == "-o" ]]; then
@@ -15,6 +18,9 @@ l=`wc -l ${f} | cut -f1 -d' '`
 t=''
 while [[ ! "$t" =~ ^[a-zA-Z0-9] || "$t" =~ ^[0-9] ]]; do 
 	i=`shuf -i 0-${l} -n 1`
-	t=`sed -n ${i}p ${f}`
+	s=$(($i-$r))
+	e=$(($i+$r))
+	cmd="sed -n ${s},${e}p ${f}"
+	t=`$cmd`
 done
 echo ${t}
