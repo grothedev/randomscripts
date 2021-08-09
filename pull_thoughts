@@ -1,19 +1,23 @@
 #
-exit 1
 #TODO update
 t="/srv/www/thesite/public/t/*"
+if [[ -z ~/t.remote/ ]]; then mkdir ~/t.remote; fi
+echo "remote text files:" 
+ssh hb "ls ${t}"
 scp -r hb:$t ~/t.remote/
 for f in `ls ~/t.remote/`; do
+	echo "checking "${f}
 	if [ -e ~/${f} ]; then
 		fog=~/${f}
 	elif [ -e ~/doc/${f} ]; then
 		fog=~/doc/${f} 
 	fi
+	echo "backing up "${fog}
 	cp ${fog} ${fog}.prev
 	cat ~/t.remote/${f} > ${fog}
 	echo "" >> ${fog}
 	cat ${fog}.prev >> ${fog} 
 	rm ~/t.remote/${f}
-	rm ${f}.prev
+	rm ${fog}".prev"
 	ssh hb "echo '' >> ${f}.bak; cat ${fog} >> ${f}.bak; rm ${f}; touch ${f}; chmod a+w ${f}; sudo chown www-data:www-data ${f}"
 done
