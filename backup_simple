@@ -2,12 +2,14 @@
 
 #a simple backup script that uses rsync
 
+d=`date +%Y-%m-%d_%H:%M:%S`
+
 if [[ -z $1 ]]; then
 	echo 'you must at least provide a source dir'
 	exit 0
 fi
 
-src=$1
+src="$1"
 #dest='hb:/var/stor/personal/backup/'
 dest="hb:"$HB_BACKUP_DIR
 rsargs=''
@@ -26,8 +28,13 @@ fi
 remote_host=`echo $dest | cut -f1 -d':'`
 #dest_path_dir=`echo $dest | cut -f2 -d':' | sed 's,\(.*\)\/$,\1\/,g'` #directory right above the file/directory of interest
 dest_path_dir=`echo $dest | sed 's,\(.*\)\/.*,\1\/,g'` #directory right above the file/directory of interest
-ssh ${remote_host} "mkdir -p ${dest_path_dir}"
-rsync -arvzP -e ssh --update ${src} ${dest} ${rsargs} >> /var/log/datasync.log
+
+
+echo "NEW BACKUP "$d" ${src} -> ${dest}" >> /var/log/datasync.log
+rsync -arvzP --protect-args -e ssh --update ${src} ${dest} ${rsargs} >> /var/log/datasync.log
+echo "" >> /var/log/datasync.log
+
+
 #if [[ TODO "%"` ]]; then
 #	echo "Complete."
 #else

@@ -1,18 +1,40 @@
 #!/bin/bash
 
+DBG=0
+if [[ $1 ]]; then
+    DBG=1
+fi
+
 #only continue if the server is reachable
-statuscheck=`ssh hb 2>&1`
+statuscheck=`ssh hb echo test 2>&1`
 if [[ $statuscheck == *onnect* ]]; then
 	exit 1
 fi
 
 #backs up commonly modified files
 for f in `cat ~/.config/datasync/files`; do
-	rt=`ssh hb "date -r ~/img +%s"`
-	lt=`date -r ~/img +%s`
+        rt=`ssh hb "date -r ${f} +%s"`
+	lt=`date -r ${f} +%s`
+        if [[ $DBG ]]; then
+            echo "file: "$f
+            echo "remote time: "$rt
+            echo "local time: "$lt
+        fi
 	if [[ ${lt} != ${rt} && ${lt} -ge ${rt} ]]; then #local file is newer, so update
-		f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
-		echo $f
-		backup_simple ${f} ${f}
+                f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+                if [[ $DBG ]]; then
+                    echo "local file is newer. updating."
+                    echo "execute update? (y/n)"
+                    read a
+                    if [[ $a == "y" || $a == "Y" ]]; then
+		        echo "backing up "$f
+		        backup_simple ${f} ${f} 
+                    else
+                        echo "not backing up "$f
+                    fi
+                else
+		    echo $f
+		    backup_simple ${f} ${f}
+                fi
 	fi
 done

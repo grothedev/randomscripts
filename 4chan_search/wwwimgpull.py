@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import sys
 
 ###
 # get images from websites
@@ -28,3 +29,9 @@ def pullImgs(url):
         srcURL = img.get('src')
         result.append(srcURL)
     return result
+
+if len(sys.argv) < 2:
+    sys.exit(0)
+
+for url in pull4chImgs(sys.argv[1]):
+    print(url)
