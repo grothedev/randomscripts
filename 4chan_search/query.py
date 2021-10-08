@@ -1,8 +1,11 @@
+#!/usr/bin/python2
+
 import json
 import requests
 import sqlite3
 import sys
 from wwwimgpull import *
+
 
 def processCatalog(catalog, b):
 

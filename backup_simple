@@ -2,6 +2,11 @@
 
 #a simple backup script that uses rsync
 
+#arg 1: source path: the path to backup. 
+#arg 2 (optional): destination path: absolute path on host to put src
+#arg 3: rsync args
+#if no destination given, src will be pushed to the given src inside of path described by ${HB_BACKUP_DIR} env var, if it exists, otherwise it will be inside of remote user's home dir
+
 d=`date +%Y-%m-%d_%H:%M:%S`
 
 if [[ -z $1 ]]; then
@@ -9,14 +14,20 @@ if [[ -z $1 ]]; then
 	exit 0
 fi
 
-src="$1"
+src_path="$1"
 #dest='hb:/var/stor/personal/backup/'
-dest="hb:"$HB_BACKUP_DIR
+dest_host="hb"
+if [[ $HB_BACKUP_DIR ]]; then
+    dest_path=$HB_BACKUP_DIR"/"${src_path}
+else
+    dest_path="~/"${src_path}
+fi
+
 rsargs=''
 
 if [[ $2 ]]; then
 	echo 'using destination '${2}
-	dest="thomas@hb:"${2}
+	dest_path=${2}
 fi
 
 if [[ $3 ]]; then
@@ -24,14 +35,15 @@ if [[ $3 ]]; then
 	rsargs=${@}	
 fi
 
-
-remote_host=`echo $dest | cut -f1 -d':'`
-#dest_path_dir=`echo $dest | cut -f2 -d':' | sed 's,\(.*\)\/$,\1\/,g'` #directory right above the file/directory of interest
-dest_path_dir=`echo $dest | sed 's,\(.*\)\/.*,\1\/,g'` #directory right above the file/directory of interest
-
-
-echo "NEW BACKUP "$d" ${src} -> ${dest}" >> /var/log/datasync.log
-rsync -arvzP --protect-args -e ssh --update ${src} ${dest} ${rsargs} >> /var/log/datasync.log
+dest=$dest_host":"$dest_path
+if [[ ${dest_path: -1} == "/" ]]; then
+    ssh hb mkdir -p ${dest_path}    
+else
+    dest_parent_dir=`echo $dest_path | rev | cut -d'/' -f2- | rev`
+    ssh hb mkdir -p ${dest_parent_dir}
+fi
+echo "NEW BACKUP $d ${src_path} -> ${dest}" >> /var/log/datasync.log
+rsync -arvzP --protect-args -e ssh --update ${src_path} ${dest} ${rsargs} >> /var/log/datasync.log
 echo "" >> /var/log/datasync.log
 
 

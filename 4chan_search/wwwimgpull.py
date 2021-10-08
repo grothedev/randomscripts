@@ -30,8 +30,8 @@ def pullImgs(url):
         result.append(srcURL)
     return result
 
-if len(sys.argv) < 2:
-    sys.exit(0)
+#if len(sys.argv) < 2:
+#    sys.exit(0)
 
-for url in pull4chImgs(sys.argv[1]):
-    print(url)
+#for url in pull4chImgs(sys.argv[1]):
+#    print(url)

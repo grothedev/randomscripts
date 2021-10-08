@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DBG=0
 if [[ $1 ]]; then
     DBG=1
+    echo "DEBUG MODE :) yeeee"
 fi
 
 #only continue if the server is reachable
@@ -13,6 +13,10 @@ fi
 
 #backs up commonly modified files
 for f in `cat ~/.config/datasync/files`; do
+        f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+        if [[ $DBG ]]; then
+            echo "file: "$f
+        fi
         rt=`ssh hb "date -r ${f} +%s"`
 	lt=`date -r ${f} +%s`
         if [[ $DBG ]]; then
@@ -20,8 +24,7 @@ for f in `cat ~/.config/datasync/files`; do
             echo "remote time: "$rt
             echo "local time: "$lt
         fi
-	if [[ ${lt} != ${rt} && ${lt} -ge ${rt} ]]; then #local file is newer, so update
-                f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+	if [[ -z ${rt} || ( ${lt} != ${rt} && ${lt} -ge ${rt} ) ]]; then #local file is newer, so update
                 if [[ $DBG ]]; then
                     echo "local file is newer. updating."
                     echo "execute update? (y/n)"

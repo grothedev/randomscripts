@@ -1,10 +1,10 @@
 #
 #TODO update
-t="/srv/www/thesite/public/t/*"
+tdir="/srv/www/thesite/public/t/"
 if [[ -z ~/t.remote/ ]]; then mkdir ~/t.remote; fi
 echo "remote text files:" 
-ssh hb "ls ${t}"
-scp -r hb:$t ~/t.remote/
+ssh hb "ls ${tdir}"
+scp -r hb:${tdir}/ ~/t.remote/
 for f in `ls ~/t.remote/`; do
 	echo "checking "${f}
 	if [ -e ~/${f} ]; then
@@ -14,10 +14,19 @@ for f in `ls ~/t.remote/`; do
 	fi
 	echo "backing up "${fog}
 	cp ${fog} ${fog}.prev
+
+        echo "prepending new data"
 	cat ~/t.remote/${f} > ${fog}
 	echo "" >> ${fog}
 	cat ${fog}.prev >> ${fog} 
-	rm ~/t.remote/${f}
+	
+        echo "deleting file from server"
+        d=`date +%s`
+        ssh hb "tar -czvf ~/.t.bak/${d}.tar.gz ${tdir}/*; rm ${tdir}/*"
+        rm ~/t.remote/${f}
 	rm ${fog}".prev"
-	ssh hb "echo '' >> ${f}.bak; cat ${fog} >> ${f}.bak; rm ${f}; touch ${f}; chmod a+w ${f}; sudo chown www-data:www-data ${f}"
+	#ssh hb "echo '' >> ${f}.bak; cat ${fog} >> ${f}.bak; rm ${f}; touch ${f}; chmod a+w ${f}; sudo chown www-data:www-data ${f}"
 done
+
+#TODO delete old backups
+#ssh hb "if [[ $((`find ~/.t.bak/ -type f | wc -l`)) -gt 5 ]]; then fi"
