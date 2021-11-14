@@ -42,8 +42,11 @@ case ${1} in
 		station="thetrip.pls";;
 	7)
 		station="seventies.pls";;
+        th)
+                station="thistle.pls";;
 	*)
 		station="${1}.pls";;	
 esac
 
-cvlc -I lua https://somafm.com/${station}
+#cvlc -I lua https://somafm.com/${station}
+vlc -I lua https://somafm.com/${station}

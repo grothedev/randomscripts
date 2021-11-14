@@ -1,8 +1,15 @@
 n=`ls -f ~/img/wallpapers | wc -l`
-echo "$n"
 i=`shuf -i 0-$n -n 1`
 files=(~/img/wallpapers/*)
 export DISPLAY=":0.0"
-`nitrogen --head=0 --set-scaled ${files[i]}`
+if [[ $DESKTOP_SESSION == "i3" ]]; then
+	feh --bg-scale --zoom fill ${files[i]}
+else 
+	`nitrogen --head=0 --set-scaled ${files[i]}`
+fi
 i=`shuf -i 0-$n -n 1`
-`nitrogen --head=1 --set-scaled ${files[i]}`
+if [[ $DESKTOP_SESSION == "i3" ]]; then
+	feh --bg-scale --zoom fill ${files[i]}
+else
+	`nitrogen --head=1 --set-scaled ${files[i]}`
+fi

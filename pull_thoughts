@@ -1,32 +1,59 @@
 #
 #TODO update
-tdir="/srv/www/thesite/public/t/"
-if [[ -z ~/t.remote/ ]]; then mkdir ~/t.remote; fi
-echo "remote text files:" 
-ssh hb "ls ${tdir}"
-scp -r hb:${tdir}/ ~/t.remote/
-for f in `ls ~/t.remote/`; do
-	echo "checking "${f}
-	if [ -e ~/${f} ]; then
-		fog=~/${f}
-	elif [ -e ~/doc/${f} ]; then
-		fog=~/doc/${f} 
-	fi
-	echo "backing up "${fog}
-	cp ${fog} ${fog}.prev
+#this is where the notes are stored on server
+tdir="/srv/www/thesite/public/t/" #t for 'text' i guess
 
-        echo "prepending new data"
-	cat ~/t.remote/${f} > ${fog}
-	echo "" >> ${fog}
-	cat ${fog}.prev >> ${fog} 
-	
-        echo "deleting file from server"
-        d=`date +%s`
-        ssh hb "tar -czvf ~/.t.bak/${d}.tar.gz ${tdir}/*; rm ${tdir}/*"
-        rm ~/t.remote/${f}
-	rm ${fog}".prev"
+buffer=${HOME}"/.tmp/tbuff/" #buffer dir to temporarily store the downloaded files
+
+DBG=0
+if [[ $1 ]]; then DBG=1; fi
+
+#store the notes in a temporary buffer
+if [[ ! -d $buffer ]]; then mkdir -p $buffer; fi
+
+filelist=`ssh hb "ls ${tdir}"`
+if [[ $filelist == "" ]]; then
+	echo "no new notes from server. will check local buffer"
+else
+	scp -r hb:${tdir}/* $buffer"/"
+fi
+
+if [[ $DBG ]]; then
+	echo "remote text files:" 
+	echo $filelist
+fi
+
+if [[ -z `ls $buffer` ]]; then
+	echo "nothing in buffer. exiting."
+	exit 0
+fi
+
+for f in `ls $buffer`; do
+	if [[ $DBG ]]; then
+		echo "checking "${f}
+	fi
+	#check if a file of the same name already exists locally.
+	#if so, prepend new note to it. NOTE: change to append if more practical
+	if [ -e ~/doc/${f} ]; then
+		fog=~/doc/${f}
+
+		if [[ $DBG ]]; then echo "backing up "${fog}; fi
+		cp ${fog} ${fog}.prev
+		if [[ $DBG ]]; then echo "prepending new data"; fi
+		cat ${buffer}/${f} > ${fog}
+		echo "" >> ${fog}
+		cat ${fog}.prev >> ${fog}
+		rm ${fog}".prev"
+	else
+		cat ${buffer}/${f} > ~/doc/${f}
+	fi
+	rm ${buffer}/${f}
 	#ssh hb "echo '' >> ${f}.bak; cat ${fog} >> ${f}.bak; rm ${f}; touch ${f}; chmod a+w ${f}; sudo chown www-data:www-data ${f}"
 done
+
+#backup remote files
+d=`date +%s`
+ssh hb "cd ${tdir}/..; tar -czvf .t.bak/${d}.tar.gz ${tdir}/*; rm ${tdir}/*"
 
 #TODO delete old backups
 #ssh hb "if [[ $((`find ~/.t.bak/ -type f | wc -l`)) -gt 5 ]]; then fi"
