@@ -1,7 +1,7 @@
 [Unit]
 Description=updates /etc/hosts with my custom hosts
-Requires=network-online.target
-After=multi-user.target
+Requires=network-connected.target
+After=multi-user.target network-connected.target
 
 [Service]
 Type=simple

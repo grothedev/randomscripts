@@ -8,9 +8,10 @@ localcheck=`nmap -sn 192.168.1.0/24 | grep debian`
 if [[ $localcheck ]]; then
 	hb_ip=`echo $localcheck | sed 's/.*(\(.*\))/\1/g'`
 else
-	hb_ip=`ping grothe.ddns.net -c  1 | sed 's/bytes from.*(\(.*\)).*/\1/g'`
+        hb_ip=`ping grothe.ddns.net -c 1 | grep PING | awk '{print $3}' | sed 's/(\|)//g'`
 fi
 
-sed -i 's/'${hb_ip}'.*//g'
-echo '${hb_ip}	hb' >> /etc/hosts
+#sed -i 's/'${hb_ip}'.*//g' /etc/hosts
+sed -i 's/.*hb//g' /etc/hosts
+echo "${hb_ip}	hb" >> /etc/hosts
 
