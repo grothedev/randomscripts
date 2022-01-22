@@ -4,6 +4,7 @@
 tdir="/srv/www/thesite/public/t/" #t for 'text' i guess
 
 buffer=${HOME}"/.tmp/tbuff/" #buffer dir to temporarily store the downloaded files
+PREPEND=false
 
 DBG=0
 if [[ $1 ]]; then DBG=1; fi
@@ -37,13 +38,18 @@ for f in `ls $buffer`; do
 	if [ -e ~/doc/${f} ]; then
 		fog=~/doc/${f}
 
-		if [[ $DBG ]]; then echo "backing up "${fog}; fi
-		cp ${fog} ${fog}.prev
-		if [[ $DBG ]]; then echo "prepending new data"; fi
-		cat ${buffer}/${f} > ${fog}
-		echo "" >> ${fog}
-		cat ${fog}.prev >> ${fog}
-		rm ${fog}".prev"
+                if [[ $PREPEND ]]; then
+                    if [[ $DBG ]]; then echo "backing up "${fog}; fi
+                    cp ${fog} ${fog}.prev
+                    if [[ $DBG ]]; then echo "prepending new data"; fi
+                    cat ${buffer}/${f} > ${fog}
+                    echo "" >> ${fog}
+                    cat ${fog}.prev >> ${fog}
+                    rm ${fog}".prev"
+                else
+                    if [[ $DBG ]]; then echo "appending new data"; fi
+                    cat ${buffer}/${f} >> ${fog}
+                fi
 	else
 		cat ${buffer}/${f} > ~/doc/${f}
 	fi
