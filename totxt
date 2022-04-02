@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+#  this script will generate a text file containing all the text of the files (including odt files) from the given folder 
+#  args: 
+#    none: use current dir, output results
+#    1 (./this [dir]): use given dir, output result
+#    2:(./this [dir] [file]): use given dir, write result to given file
+
+
+if [[ $1 ]]; then
+    d=${1}
+else
+    d="./"
+fi
+
+if [[ $2 ]]; then
+    outf=${2}
+fi
+
+
+for f in `ls ${d} -A`; do
+    echo $f
+    if [[ ${f} == *".odt" ]]; then 
+        t=`odt2txt ${f}`
+    else
+        t=`cat ${f}`
+    fi
+    if [[ ${outf} ]]; then
+        echo ${f} >> comp
+        echo ${t} >> comp;
+        echo >> comp;
+    else
+        echo ${f}
+        echo ${t};
+        echo "";
+    fi 
+done;
+
