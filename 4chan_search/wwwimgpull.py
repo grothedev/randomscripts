@@ -1,3 +1,5 @@
+#!/bin/python2
+
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -20,6 +22,15 @@ def pull4chImgs(url):
             if url[0:2] == '//':
                 url = 'https:' + url
             result.append(url)
+    return result
+
+def pullVids(url):
+    result = []
+    resp = requests.get(url)
+    html = BeautifulSoup(resp.text, 'html.parser')
+    for a in html.find_all('a'):
+        if '.webm' in a.get('href'):
+            result.append(a.get('href'))
     return result
 
 def pullImgs(url):
@@ -64,3 +75,4 @@ def pullPDFs(url, depth=0, alreadycrawled=[]):
 
 #for url in pull4chImgs(sys.argv[1]):
 #    print(url)
+
