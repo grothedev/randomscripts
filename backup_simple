@@ -18,9 +18,9 @@ src_path="$1"
 #dest='hb:/var/stor/personal/backup/'
 dest_host="hb"
 if [[ $HB_BACKUP_DIR ]]; then
-    dest_path=$HB_BACKUP_DIR"/"${src_path}
+    dest_path=$HB_BACKUP_DIR"/"
 else
-    dest_path="~/"${src_path}
+    dest_path="~/"
 fi
 
 rsargs=''
@@ -36,14 +36,14 @@ if [[ $3 ]]; then
 fi
 
 dest=$dest_host":"$dest_path
-if [[ ${dest_path: -1} == "/" ]]; then
-    ssh hb mkdir -p ${dest_path}    
-else
-    dest_parent_dir=`echo $dest_path | rev | cut -d'/' -f2- | rev`
-    ssh hb mkdir -p ${dest_parent_dir}
-fi
+#if [[ ${dest_path: -1} == "/" ]]; then
+#    ssh hb mkdir -p ${dest_path}    
+#else
+#    dest_parent_dir=`echo $dest_path | rev | cut -d'/' -f2- | rev`
+#    ssh hb mkdir -p ${dest_parent_dir}
+#fi
 echo "NEW BACKUP $d ${src_path} -> ${dest}" >> /var/log/datasync.log
-rsync -arvzP --protect-args -e ssh --update ${src_path} ${dest} ${rsargs} >> /var/log/datasync.log
+rsync -ahAvz --protect-args -e ssh --update ${src_path} ${dest} ${rsargs} >> /var/log/datasync.log
 echo "" >> /var/log/datasync.log
 
 

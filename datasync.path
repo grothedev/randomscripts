@@ -2,13 +2,16 @@
 Wants=datasync.service
 
 [Path]
-PathModified=/home/thomas/doc/blog/
-PathModified=/home/thomas/img/
-PathModified=/home/thomas/_journal
-PathModified=/home/thomas/lmms/projects/
-PathModified=/home/thomas/do
-PathModified=/home/thomas/_poetry
-PathModified=/home/thomas/aud/me/fragments-album-forreal-2018/
+PathChanged=/home/thomas/doc/
+PathChanged=/home/thomas/img/
+PathChanged=/home/thomas/_journal
+PathChanged=/home/thomas/lmms/projects/
+PathChanged=/home/thomas/do
+PathChanged=/home/thomas/_poetry
+PathChanged=/home/thomas/aud/
+PathChanged=/home/thomas/.password-store
+PathChanged=/home/thomas/vid
+PathChanged=/home/thomas/dev
 Unit=datasync.service
 
 [Install]
