@@ -2,25 +2,81 @@
 #Words Of Wisdom
 # output some random text from my journal 
 
-r=5
-if [[ $1 ]]; then
-	r=$1
+#TODO
+# - add option to specify max depth of directory recursion (or no recursion)
+# - define a more detailed config file
+
+r=5 #range of text sample (how many lines to grab)
+V=false #verbose
+
+files=()
+
+while getopts "f:l:r:v" opt; do
+    case $opt in
+        v)
+         V=true
+         ;;
+        f)
+         files+=("$OPTARG")
+         if $V ; then echo $OPTARG; fi
+         ;;
+        r)
+         r=$OPTARG
+         echo "using range="$r
+        ;;
+        l)
+         if $V ; then echo "using files listed in "$OPTARG; fi
+         for l in `cat $OPTARG`; do
+            l=`echo $l | sed 's,\~,/home/'$USER'/,g'`
+            echo $l
+            for f in `find $l`; do #expand any wildcards
+                if $V ; then echo "adding "$f; fi
+                files+=("$f")
+            done
+         done
+        ;;
+    esac
+done
+
+if [[ ${#files[@]} == 0 ]]; then
+    files=(~/doc/j/_journal-toaug2022 ~/_poetry ~/doc/_journal_2019)
 fi
 
-files=(~/_journal ~/_poetry ~/doc/_journal_2019) #TODO other files
-if [[ $1 == "-o" ]]; then
-	files+=("~/doc/daily-writings/comp")
-fi
+if [ $V ]; then echo "Grabbing text sample from files: "${files[*]}; fi
+
 n=${#files[@]}
 n=$(($n-1))
 f=${files[`shuf -i 0-${n} -n 1`]}
-l=`wc -l ${f} | cut -f1 -d' '`
+if [[ ${f} == *".odt" ]]; then
+    if $V ; then echo "odt file"; fi
+    txt=`odt2txt ${f} | tr '.' '\n'`# | sed 's/\./\.\n/g'` #split by sentence because most of these are 1 line
+    
+    l=`echo ${txt} | wc -l | cut -f1 -d' '`
+    echo $txt
+    echo $l
+    exit 0
+else
+    l=`wc -l ${f} | cut -f1 -d' '` 
+    txt=`cat ${f}`
+fi
+if $V; then echo "l="$l; fi
+
+if [[ -z $l ]]; then
+    echo "line get failed. perhaps ${f} doesn't exist?"
+    exit 1
+fi
+
 t=''
 while [[ ! "$t" =~ ^[a-zA-Z0-9] || "$t" =~ ^[0-9] ]]; do 
-	i=`shuf -i 0-${l} -n 1`
-	s=$(($i-$r))
-	e=$(($i+$r))
-	cmd="sed -n ${s},${e}p ${f}"
-	t=`$cmd`
+        if $V ; then echo "sampling from "${f}; fi
+        i=`shuf -i ${r}-${l} -n 1`
+        s=$(($i-$r))
+        e=$(($i+$r))
+        if [[ ${e} -gt ${l} ]]; then
+            e=$((l-1))
+        fi
+        if $V ; then echo "lines "$s"-"$e; fi
+        t=`echo ${txt} | sed -n ${s},${e}p`
+#        sleep 2
 done
 echo ${t}
