@@ -1,0 +1,2 @@
+#!/bin/bash
+ip -4 -f inet address show dev wlp4s0 | grep 192 | awk '{print $2}' | cut -d'/' -f 1
