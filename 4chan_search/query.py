@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
 import json
 import requests
@@ -82,3 +82,4 @@ else:
 
 for url in results_url:
     print(url)
+

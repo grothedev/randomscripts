@@ -1,4 +1,5 @@
 #!/bin/bash
+#backup_personal
 #this script backs up personal documents to the vps and personal server
 
 echo -e "backing up files $(date) \n" >> ~/.backuplog

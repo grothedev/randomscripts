@@ -1,4 +1,4 @@
-#!/bin/python2
+#!/bin/python
 
 import requests
 from bs4 import BeautifulSoup

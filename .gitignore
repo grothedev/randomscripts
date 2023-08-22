@@ -1,2 +1,3 @@
 cpfiles.sh
 filepaths.txt
+*__pycache__*

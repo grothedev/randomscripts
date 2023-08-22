@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#grep for odt files
+if [[ -z $1 || -z $2 ]]; then
+	echo "usage: ogrep [pattern] [file(s)]"
+	exit 0
+fi
+for f in `ls ${2}`; do
+	if [[ ! ${f} == *".odt" ]]; then
+		continue
+	fi
+	echo "got " ${f}
+	echo "${f}: "
+	odt2txt ${f} | grep ${1}
+done
