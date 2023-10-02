@@ -25,6 +25,10 @@ for f in `cat ~/.config/datasync/files`; do
             echo "local time: "$lt
         fi
 	if [[ -z ${rt} || ( ${lt} != ${rt} && ${lt} -ge ${rt} ) ]]; then #local file is newer, so update
+		#make sure to have trailing '/' if directory, because rsync is weird
+		if [[ -d ${f} ]]; then
+			f=${f}"/"
+		fi
                 if [[ $DBG ]]; then
                     echo "local file is newer. updating."
                     echo "execute update? (y/n)"
