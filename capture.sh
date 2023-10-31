@@ -2,11 +2,17 @@
 #this script repeatedly captures images from a video device (e.g. /dev/video0) at regular intervals
 #and it compresses images into an .tar.gz after some number and deletes those images
 #and it deletes old archives after some number have been made
+#you can provide a directory in which to save the images if desired 
 
 MAX_SIZE=1073741824 #1G in bytes
 TIME_INTERVAL=15 #seconds between taking snapshots
 THRESHOLD_ARCHIVE=5760 #number of images after which archiving should be done. 5760 is one day if pics are every 15s
 THRESHOLD_REMOVE=30 #number of image archive tarballs after which a handful of the oldest archives will be deleted
+
+#set the working directory 
+if [[ ${1} && -d ${1} ]]; then 
+	cd ${1}
+fi
 
 while [[ true ]]; do
 	d=`date +%Y%m%d_%H%M%S`
