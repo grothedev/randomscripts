@@ -70,6 +70,19 @@ def pullPDFs(url, depth=0, alreadycrawled=[]):
             result = result + pullPDFs(url, depth+1, alreadycrawled)
     return result
 
+#return a list of strings of all the links on the given webpage (<a> elements) whose href contains the given search string
+def getLinksContainingStr(url, s):
+    result = []
+    resp = requests.get(url)
+    html = BeautifulSoup(resp.text, 'html.parser')
+    for link in html.find_all('a'):
+        h = link.get('href')
+        if s in h:
+            result.append(h)
+    return result
+
+
+
 #if len(sys.argv) < 2:
 #    sys.exit(0)
 
