@@ -1,6 +1,12 @@
 
+d="."
+if [[ ${1} ]]; then d=${1}; fi
+
 if [ -z ${2} ]; then
-	du -a ${1} | sort -n -r | head -n 15
+	#du -a ${d} | sort -n -r | head -n 15
+	find ${d} -type f -exec du -Sh {} + | sort -rh | head -n 20
+	# use -not -path [dir]  to exlude directories
 else
-	du -a ${1} | sort -n -r | head -n ${2}
+	#du -a ${1} | sort -n -r | head -n ${2}
+	find ${d} -type f -exec du -Sh {} + | sort -rh | head -n ${2}
 fi
