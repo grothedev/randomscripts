@@ -20,10 +20,10 @@ def attemptReadSampleFile(filepath):
         ftype = filetype.guess(filepath)
         if v: print('filetype: {}'.format(str(ftype)))
         if ftype != None:
-            if ftype.extension in ['py', 'c', 'cc', 'h', 'hh', 'java', 'rst', 'css', 'html', 'htm', 'js', 'php']: #don't want code in the sample data
+            if ftype.extension in ['py', 'c', 'cc', 'h', 'hh', 'java', 'rst', 'css', 'html', 'htm', 'js', 'php', 'sh']: #don't want code in the sample data
                 if v: print('this file is code')
                 return None
-            if ftype.extension == 'odt':
+            if ftype.extension == 'odt' and filepath[len(filepath)-1] != '#': #openoffice doc and not a lock file
                 subproc = subprocess.run(['odt2txt', filepath], encoding='utf-8', stdout=subprocess.PIPE)
                 return subproc.stdout
         else:
@@ -69,6 +69,12 @@ while t == None:
 
 print()
 print('{} : {}'.format(samplefiles[fi], t))
+
+lines = t.splitlines()
+li = random.randint(0, len(t)) #line index
+#ci = random.randint(0, len(t)) #character index
+res = '\n'.join(lines[li: li+7])
+print(res)
 
 
 #for f in samplefiles:
