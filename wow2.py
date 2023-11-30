@@ -43,7 +43,7 @@ def attemptReadSampleFile(filepath):
 paths=['/home/thomas/doc/j/', '/home/thomas/_poetry', '/home/thomas/doc/_journal_2019'] #the paths to scan recursively for files from which to grab text
 samplefiles=[] #the paths of the individual files from which we want to grab text
 
-v=True #verbose 
+v=False #verbose 
 tStart = time.time()
 for p in paths:
         if v: print('path {}'.format(p))
@@ -75,11 +75,3 @@ li = random.randint(0, len(t)) #line index
 #ci = random.randint(0, len(t)) #character index
 res = '\n'.join(lines[li: li+7])
 print(res)
-
-
-#for f in samplefiles:
-#    print(f)
-
-
-
-
