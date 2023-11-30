@@ -39,7 +39,7 @@ while getopts "f:l:r:v" opt; do
 done
 
 if [[ ${#files[@]} == 0 ]]; then
-    files=(~/doc/j/_journal-toaug2022 ~/_poetry ~/doc/_journal_2019)
+    files=(~/doc/j/_journal-toaug2022 ~/_poetry ~/doc/_journal_2019 )
 fi
 
 if [ $V ]; then echo "Grabbing text sample from files: "${files[*]}; fi
