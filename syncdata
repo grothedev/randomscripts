@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#TODO update: each folder has some metadata file in it to describe which folders to [in/ex]clude, and maybe some other rules. this metadata should either be in the filesystem itself or stored in a DB
+
 if [[ $1 ]]; then
     DBG=1
     echo "DEBUG MODE :) yeeee"
@@ -13,35 +15,41 @@ fi
 
 #backs up commonly modified files
 for f in `cat ~/.config/datasync/files`; do
-        f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
-        if [[ $DBG ]]; then
-            echo "file: "$f
-        fi
-        rt=`ssh hb "date -r ${f} +%s"`
+        if [[ ${f:0:1} == '#' ]]; then
+		continue
+	fi
+	f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+    if [[ $DBG ]]; then
+        echo "file: "$f
+    fi
+	#check if last modified time of local is newer
+		#thought about also checking entire dir size (with du) but wont work because remote has more files that are no longer on local
+		#so i will traverse recursively and only check if the file exists on local
+    rt=`ssh hb "date -r ${f} +%s"`
 	lt=`date -r ${f} +%s`
-        if [[ $DBG ]]; then
-            echo "file: "$f
-            echo "remote time: "$rt
-            echo "local time: "$lt
-        fi
+    if [[ $DBG ]]; then
+        echo "file: "$f
+        echo "remote time: "$rt
+        echo "local time: "$lt
+    fi
 	if [[ -z ${rt} || ( ${lt} != ${rt} && ${lt} -ge ${rt} ) ]]; then #local file is newer, so update
 		#make sure to have trailing '/' if directory, because rsync is weird
 		if [[ -d ${f} ]]; then
 			f=${f}"/"
 		fi
-                if [[ $DBG ]]; then
-                    echo "local file is newer. updating."
-                    echo "execute update? (y/n)"
-                    read a
-                    if [[ $a == "y" || $a == "Y" ]]; then
-		        echo "backing up "$f
-		        backup_simple ${f} ${f} 
-                    else
-                        echo "not backing up "$f
-                    fi
-                else
-		    echo $f
-		    backup_simple ${f} ${f}
-                fi
+        if [[ $DBG ]]; then
+            echo "local file is newer. updating."
+            echo "execute update? (y/n)"
+            read a
+            if [[ $a == "y" || $a == "Y" ]]; then
+                echo "backing up "$f
+                backup_simple ${f} ${f} 
+            else
+                echo "not backing up "$f
+            fi
+        else
+            echo $f
+            backup_simple ${f} ${f}
+        fi
 	fi
 done
