@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+# NOTE: very old script. i have since made a better one.
 #  this script will generate a text file containing all the text of the files (including odt files) from the given folder 
 #  args: 
 #    none: use current dir, output results
