@@ -15,7 +15,7 @@ def processCatalog(catalog, b):
                 continue
             url = "https://boards.4channel.org/"+b+"/thread/"+str(catalog[i]['threads'][j]['no'])
             if wod == "*" or wod == "" or wod.lower() in catalog[i]['threads'][j]['com'].lower():
-                results_url.append(url)
+                results_url.append((url, catalog[i]['threads'][j]['last_modified']))
                 results_content.append(catalog[i]['threads'][j]['com'])
                 for imgurl in pull4chImgs(url):
                     results_img.append(imgurl)
@@ -26,7 +26,7 @@ def processCatalog(catalog, b):
                 if not 'com' in r:
                         continue
                 if wod.lower() in r['com'].lower():
-                    results_url.append(url+"#p"+str(catalog[i]['threads'][j]['last_replies'][k]['no']))
+                    results_url.append((url+"#p"+str(catalog[i]['threads'][j]['last_replies'][k]['no'],catalog[i]['threads'][j]['last_replies'][k]['last_modified'])))
                     results_content.append(catalog[i]['threads'][j]['last_replies'][k]['com'])
                     #imgs were already retrieved from OP grab
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #Words Of Wisdom
-# output some random text from my journals and writings
+# output some random text from some given collection of files, 
+#   - primarily used to grab some random "words of wisdom" from my journals and writings
 
 import os
 import sys
@@ -9,8 +10,11 @@ import filetype #for filetype (extension and mime type)
 import chardet #for getting encoding
 import subprocess
 import random
+import getopt
 
 total_text = ''
+
+
 
 #can we parse text out of this file or is it a libreoffice file? if so, return the contents
 def attemptReadSampleFile(filepath):
@@ -26,6 +30,9 @@ def attemptReadSampleFile(filepath):
             if ftype.extension == 'odt' and filepath[len(filepath)-1] != '#': #openoffice doc and not a lock file
                 subproc = subprocess.run(['odt2txt', filepath], encoding='utf-8', stdout=subprocess.PIPE)
                 return subproc.stdout
+            if ftype.extension == 'txt':
+                print('AYO!')
+                return str(f.read(), encoding='utf-8')
         else:
             fb = f.read() #file data (bytes) to detect encoding
             enc = str(chardet.detect(fb)['encoding'])
@@ -42,6 +49,22 @@ def attemptReadSampleFile(filepath):
 #paths=['/home/thomas/doc/fiction']
 paths=['/home/thomas/doc/j/', '/home/thomas/_poetry', '/home/thomas/doc/_journal_2019'] #the paths to scan recursively for files from which to grab text
 samplefiles=[] #the paths of the individual files from which we want to grab text
+matchpattern='' #if we want to filter the files by some text pattern
+time_min = -1 #threshold time. dont use files that are older
+
+ags,vals = getopt.getopt(sys.argv[1:], 'h:e:')
+for a,v in ags:
+    if a == '-h':
+        print('TODO usage info')
+    if a == '-e': #selected file must match some text pattern
+        matchpattern = v  #TODO      
+    if a == '-t':
+        time_min = int(v) #TODO
+
+if len(sys.argv) > 1:
+    paths = sys.argv[1:]
+
+
 
 v=False #verbose 
 tStart = time.time()
@@ -68,7 +91,8 @@ while t == None:
     t = attemptReadSampleFile(samplefiles[fi])
 
 print()
-print('{} : {}'.format(samplefiles[fi], t))
+mt = time.ctime(os.path.getmtime(samplefiles[fi]))
+print('{} ;\n       last modified {} :\n  {}'.format(samplefiles[fi], mt, t))
 
 lines = t.splitlines()
 li = random.randint(0, len(t)) #line index

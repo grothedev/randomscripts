@@ -15,7 +15,7 @@ echo "and writing to "${outfile}
 for f in `find ${passdb} | grep \.gpg`; do 
 	#echo $f >> ${outfile}
 	#pass `echo $f | sed 's/\.gpg//g'` >> ${outfile}
-	pswd=`gpg --quiet -d ${f} >> ${outfile} `
+	pswd=`gpg --quiet -d ${f}`
 	echo "${f} : ${pswd}" >> ${outfile}
 done
 
