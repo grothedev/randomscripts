@@ -5,11 +5,9 @@ if [[ -z $1 || -z $2 ]]; then
 	echo "usage: ogrep [pattern] [file(s)]"
 	exit 0
 fi
-for f in `ls ${2}`; do
-	if [[ ! ${f} == *".odt" ]]; then
-		continue
+for f in `find ${2} -type f -name "*odt"`; do
+	res=`odt2txt ${f} | grep ${1}`
+	if [[ $res ]]; then
+		echo "${f}: ${res}"
 	fi
-	echo "got " ${f}
-	echo "${f}: "
-	odt2txt ${f} | grep ${1}
 done
