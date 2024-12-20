@@ -2,6 +2,11 @@
 
 #TODO update: each folder has some metadata file in it to describe which folders to [in/ex]clude, and maybe some other rules. this metadata should either be in the filesystem itself or stored in a DB
 
+CONFIGFILE=`realpath ~/.config/datasync/files`
+DEST_HOST="hb" #destination host machine where we want to backup files to
+		#todo what is the assumed file layout on this host? 
+		#todo add support for multiple destinations
+
 if [[ $1 ]]; then
     DBG=1
     echo "DEBUG MODE :) yeeee"
@@ -14,11 +19,13 @@ if [[ $statuscheck == *onnect* ]]; then
 fi
 
 #backs up commonly modified files
-for f in `cat ~/.config/datasync/files`; do
+for f in `cat ${CONFIGFILE}`; do
         if [[ ${f:0:1} == '#' ]]; then
 		continue
 	fi
-	f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+	#f=`echo ${f} | sed 's,~,/home/'${USER}',g'`
+   	f=`realpath ${f}`
+	
     if [[ $DBG ]]; then
         echo "file: "$f
     fi
