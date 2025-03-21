@@ -1,0 +1,1 @@
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_execve { printf("PID: %d, UID: %d, CMD: %s, TIME: %u, FILE: %s\n", pid,  uid, comm, nsecs, str(args->filename)); }'
