@@ -1,0 +1,1 @@
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_execve { $f = str(args->filename); if ($f == "/usr/bin/ping" || $f == "/bin/ping") { printf("PID %d (%s) executed ping\n", pid, comm); } }'
