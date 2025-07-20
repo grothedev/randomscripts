@@ -2,8 +2,38 @@
 
 import readline # Add this at the top
 # ... rest of the code
-
+from datetime import datetime
+import subprocess
 import sys
+
+cmdConcat='ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0[v]" -map "[v]" output.mp4'
+
+#audio from first vid
+cmdAudioFromFirst = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack[v]" -map "[v]" -map 0:a -c:a copy output.mp4'
+
+#resize videos to same height
+cmdResizeToSameHeight = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v]scale=-1:720[v0];[1:v]scale=-1:720[v1];[v0][v1]hstack[v]" -map "[v]" -map 0:a -c:a copy output.mp4'
+
+#padding between vids
+cmdPadding = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v]pad=iw+10:ih[v0];[v0][1:v]hstack[v]" -map "[v]" -map 0:a output.mp4'
+
+#shorter duration vid
+cmdDurationShorter = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack=shortest=1[v]" -map "[v]" -map 0:a output.mp4'
+
+#mix audio from both
+cmdAudioMix = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack=shortest=1[v]" -map "[v]" -map 0:a output.mp4'
+
+#force same dimensions
+cmdForceSameDimension = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack[v];[0:a][1:a]amix[a]" -map "[v]" -map "[a]" output.mp4'
+
+#vertical stack
+cmdStackVertical = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v]scale=640:480[v0];[1:v]scale=640:480[v1];[v0][v1]hstack[v]" -map "[v]" -map 0:a output.mp4'
+cmdStackHorizontal = 'ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex hstack output.mp4'
+
+#3 or more vids sidebyside
+cmdMultiVids = 'ffmpeg -i video1.mp4 -i video2.mp4 -i video3.mp4 -filter_complex "[0:v][1:v][2:v]hstack=inputs=3[v]" -map "[v]" -map 0:a output.mp4'
+
+
 
 class SimpleREPL:
     def __init__(self):
@@ -13,39 +43,11 @@ class SimpleREPL:
             "exit": self._exit_repl,
             "quit": self._exit_repl, # Alias for exit
             "echo": self._echo,
-            "stack": self._stack, #vertical or horizontal 
-            
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex hstack output.mp4
+            "stack": self.stack, #vertical or horizontal
+        }
 
-#audio from first vid
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack[v]" -map "[v]" -map 0:a -c:a copy output.mp4
-
-#resize videos to same height
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v]scale=-1:720[v0];[1:v]scale=-1:720[v1];[v0][v1]hstack[v]" -map "[v]" -map 0:a -c:a copy output.mp4
-
-#padding between vids
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v]pad=iw+10:ih[v0];[v0][1:v]hstack[v]" -map "[v]" -map 0:a output.mp4
-
-#shorter duration vid
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack=shortest=1[v]" -map "[v]" -map 0:a output.mp4
-
-#mix audio from both
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack=shortest=1[v]" -map "[v]" -map 0:a output.mp4
-
-#force same dimensions
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v][1:v]hstack[v];[0:a][1:a]amix[a]" -map "[v]" -map "[a]" output.mp4
-
-#vertical stack
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex "[0:v]scale=640:480[v0];[1:v]scale=640:480[v1];[v0][v1]hstack[v]" -map "[v]" -map 0:a output.mp4
-
-#3 or more vids sidebyside
-ffmpeg -i video1.mp4 -i video2.mp4 -filter_complex vstack output.mp4
-
-# Three videos
-ffmpeg -i video1.mp4 -i video2.mp4 -i video3.mp4 -filter_complex "[0:v][1:v][2:v]hstack=inputs=3[v]" -map "[v]" -map 0:a output.mp4
-
-# Four videos (2x2 grid)
-ffmpeg -i video1.mp4 -i video2.mp4 -i video3.mp4 -i video4.mp4 -filter_complex "[0:v][1:v]hstack[top];[2:v][3:v]hstack[bottom];[top][bottom]vstack[v]" -map "[v]" -map 0:a output.mp4
+    def stack(self):
+        return
 
     def _show_help(self, *args):
         """Displays available commands."""
@@ -100,7 +102,7 @@ ffmpeg -i video1.mp4 -i video2.mp4 -i video3.mp4 -i video4.mp4 -filter_complex "
             except Exception as e:
                 return f"Error executing '{command_name}': {e}"
         else: #todo check for partial str match
-            
+
             return f"Unknown command: '{command_name}'. Type 'help' for available commands."
 
     def run(self):
@@ -127,3 +129,44 @@ ffmpeg -i video1.mp4 -i video2.mp4 -i video3.mp4 -i video4.mp4 -filter_complex "
 if __name__ == "__main__":
     repl_app = SimpleREPL()
     repl_app.run()
+#Common. functions that are frequently used by many utilities
+
+
+#execute a command
+'''def cmd(cmdStr):
+    return subprocess.run(cmdStr.join(' '), encoding='utf-8', stdout=subprocess.PIPE).stdout
+'''
+'''
+execute a command using the python subprocess module
+params:
+    cmdstr (str) : the command to run
+return: stdout of command
+'''
+def cmd(cmdstr,v=False):
+    cmdarray = cmdstr.strip().split(' ')
+    log(f'runcmd: {cmdstr}')
+    '''if '|' in cmdarray:   #TODO handling pipe not yet working
+        i = cmdarray.index('|')
+        proc0 = subprocess.check_output(cmdstr, shell=True)'''
+    proc = subprocess.run(cmdarray, stdout=subprocess.PIPE)
+    if proc.returncode == 0:
+        res = proc.stdout
+    else:
+        log(f'returncode = {proc.returncode}')
+        res = proc.stderr
+    return res
+
+def log(msg, filename=None):
+    fn = filename
+    if fn == None:
+        fn = logfilenamedefault
+    t = tnow()
+    with open(filename, 'a') as lf:
+        lf.write(f'{t}: {msg}\n')
+        lf.close()
+
+def tnow():
+    '''
+    return: current time, formatted as %Y%m%d-%H%M%S
+    '''
+    return datetime.now().strftime('%Y%m%d-%H%M%S')

@@ -1,7 +1,6 @@
 #!/bin/python3
 
-import readline # Add this at the top
-# ... rest of the code
+import readline
 
 import sys
 

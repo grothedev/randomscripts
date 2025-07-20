@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #Words Of Wisdom
 # output some random text from some given collection of files, 
 #   - primarily used to grab some random "words of wisdom" from my journals and writings
