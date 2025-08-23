@@ -51,12 +51,13 @@ def attemptReadSampleFile(filepath):
         return None
     
 
-def getSampleFiles(paths):
+def getSampleFiles(paths, exclude_paths = []):
     """grab all the possible sample files (recursive files from given paths)"""
     samples = []
     tStart = time.time()
     for p in paths:
         if v: print('path {}'.format(p))
+        #TODO exclude
         if os.path.isdir(p):
                 for root,dirs,files in os.walk(p):
                         if v: print('walk {}: {} files, {} dirs'.format(root, len(files), len(dirs)))
@@ -110,21 +111,23 @@ def parseArgs():
     
     parser.add_argument('-p', '--paths', type=str, required=False, help='a path to scan', action='append', default=[])
     parser.add_argument('-o', '--output', type=str, required=False, help='output file')
+    parser.add_argument('-x', '--exclude', type=str, required=False, help='exclude files with pattern', action='append')
     args = parser.parse_args()
 
     if (args.verbose): v = True
 
-    if args.paths: paths.append(args.paths)
+    if len(args.paths) == 0: args.paths.append('./')
 
-    if len(paths) == 0: paths.append('./')
-
-    if v: print('using paths: {}'.format(paths))
+    if v: 
+        print('using paths: {}'.format(args.paths))
+        if args.exclude:
+            print('excluding: {}'.format(str(args.exclude)))
 
     return args
 
 def main():
     args = parseArgs()
-    samplefiles = getSampleFiles(args.paths)
+    samplefiles = getSampleFiles(args.paths, args.exclude)
     chosenfile = getRandomFileTextContent(samplefiles)
     excerpt = getExcerpt(chosenfile[1])
     print(excerpt)
