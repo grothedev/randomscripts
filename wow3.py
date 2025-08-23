@@ -8,6 +8,7 @@ import random
 import subprocess
 import chardet
 import filetype
+import re
 #Words Of Wisdom
 # output some random text from some given collection of files, 
 #   - primarily used to grab some random "words of wisdom" from my journals and writings
@@ -18,6 +19,7 @@ paths=[] #the paths to scan recursively for files from which to grab text
 matchpattern='' #if we want to filter the files by some text pattern that the filename must match
 time_min = -1 #threshold time. dont use files that are older
 v=False
+exclude_dirs = ['.git', 'node_modules', 'vendor']
 
 def attemptReadSampleFile(filepath):
     if v: print('checking {}'.format(filepath))
@@ -51,20 +53,43 @@ def attemptReadSampleFile(filepath):
         return None
     
 
-def getSampleFiles(paths, exclude_paths = []):
+def getSampleFiles(paths, exclude_patterns = []):
     """grab all the possible sample files (recursive files from given paths)"""
     samples = []
+    
+    # Compile exclusion patterns into a single regex for efficiency
+    compiled_exclusions = None
+    if exclude_patterns:
+        # Join patterns with OR operator and compile once
+        pattern = '|'.join(f'({pattern})' for pattern in exclude_patterns)
+        compiled_exclusions = re.compile(pattern, re.IGNORECASE)
+    
     tStart = time.time()
     for p in paths:
         if v: print('path {}'.format(p))
-        #TODO exclude
         if os.path.isdir(p):
-                for root,dirs,files in os.walk(p):
-                        if v: print('walk {}: {} files, {} dirs'.format(root, len(files), len(dirs)))
-                        for f in files:
-                            samples.append(root + '/' + f)
+            for root, dirs, files in os.walk(p):
+                if compiled_exclusions:
+                    dirs[:] = [d for d in dirs if not compiled_exclusions.search(d)]
+                
+                if v: print('walk {}: {} files, {} dirs'.format(root, len(files), len(dirs)))
+                
+                for f in files:
+                    filepath = os.path.join(root, f)
+                    
+                    # Check if file matches any exclusion pattern
+                    if compiled_exclusions and compiled_exclusions.search(f):
+                        if v: print(f'excluding file: {filepath}')
+                        continue
+                    
+                    samples.append(filepath)
         else:
-               samples.append(p)
+            # For individual files, still check exclusion
+            if compiled_exclusions and compiled_exclusions.search(os.path.basename(p)):
+                if v: print(f'excluding file: {p}')
+            else:
+                samples.append(p)
+    
     tEnd = time.time()
     tDuration = tEnd - tStart
     if v:
