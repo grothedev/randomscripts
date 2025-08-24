@@ -19,7 +19,7 @@ paths=[] #the paths to scan recursively for files from which to grab text
 matchpattern='' #if we want to filter the files by some text pattern that the filename must match
 time_min = -1 #threshold time. dont use files that are older
 v=False
-exclude_dirs = ['.git', 'node_modules', 'vendor']
+exclude_patterns_default = ['.git', 'node_modules', 'vendor', '\.~lock'] #default patterns to exclude
 
 def attemptReadSampleFile(filepath):
     if v: print('checking {}'.format(filepath))
@@ -59,10 +59,10 @@ def getSampleFiles(paths, exclude_patterns = []):
     
     # Compile exclusion patterns into a single regex for efficiency
     compiled_exclusions = None
-    if exclude_patterns:
-        # Join patterns with OR operator and compile once
-        pattern = '|'.join(f'({pattern})' for pattern in exclude_patterns)
-        compiled_exclusions = re.compile(pattern, re.IGNORECASE)
+    exclude_patterns = exclude_patterns + exclude_patterns_default
+    # Join patterns with OR operator and compile once
+    pattern = '|'.join(f'({pattern})' for pattern in exclude_patterns)
+    compiled_exclusions = re.compile(pattern, re.IGNORECASE)
     
     tStart = time.time()
     for p in paths:
