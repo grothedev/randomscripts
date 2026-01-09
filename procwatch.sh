@@ -23,30 +23,40 @@ while true; do
         cpu_percent=$(echo "$process_info" | awk '{print $2}')
         mem_usage=$(echo "$process_info" | awk '{print $3}')
         mem_usage=$((mem_usage / 1024))  # Convert to Megabytes
-        if (( ${dur} < 2 )); then continue; fi
+
+        #if (( ${dur} < 2 )); then continue; fi
+        if (( dur < 2 )); then continue; fi
+        
+        # this is just checking if the process exceeds 1/4th of threshold
         if (( $(echo "$cpu_percent > $((cpu_threshold/4))" | bc -l) )) || (( mem_usage > $((mem_threshold/4)) )); then
             echo "PROCESS! ${pid}:${name} -- ${cpu_percent}%  ${mem_usage}MB  ${dur}s"
         fi 
-	# Check if the process exceeds the CPU or memory usage threshold
+
+        # Check if the process exceeds the CPU or memory usage threshold
         if (( $(echo "$cpu_percent > $cpu_threshold" | bc -l) )) || (( mem_usage > mem_threshold )); then
             msg_warn="$(date) - Process $name (PID: $pid) has exceeded the threshold: etime: ${dur}, CPU usage: ${cpu_percent}%, Memory usage: ${mem_usage} MB. Killing in 10 seconds" # >> "$log_file"
             echo ${msg_warn}
             notify-send -t 8000 "$msg_warn"
             sleep 10
-            if [[ $pid == $offender ]]; then
-                kill_attempts=$((kill_attempts+1))
-            else
-                offender=${pid}
+            if [[ $pid != $offender ]]; then
+                offender=$pid
                 #TODO deal with multiple offending processes later
             fi
-            if [[ ${kill_attempts} -gt 3 ]]; then       
+
+            # ACTUAL PROCESS KILL IS HERE IF YOU NEED TO MODIFY
+            if [[ ${kill_attempts} -gt 4 ]]; then       
                 echo "force kill ${pid}"
-                #kill -9 ${pid}
+                sleep 1
+                kill_attempts=$((kill_attempts+1))
+                kill -9 ${pid}
             else
-                echo "kill ${pid}"
-                #kill ${pid}
+                echo "kill ${pid}. attempt ${kill_attempts}"
+                sleep 1
+                kill_attempts=$((kill_attempts+1))
+                kill ${pid}
             fi
-            if [[ -z $(pgrep -f ${pid}) ]]; then
+            sleep 1
+            if [[ $(! kill -0 ${pid} 2>/dev/null) ]]; then
                 offender=-1
                 kill_attempts=0
             fi
