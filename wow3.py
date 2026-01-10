@@ -100,15 +100,18 @@ def getSampleFiles(paths, exclude_patterns = []):
 def getRandomFileTextContent(samplefiles):
     """pick random file until we get an acceptable one
         @return tuple(filename, textcontent)"""
-    fi = random.randint(0, len(samplefiles))
+    if len(samplefiles) == 0:
+        return (None, None)
+
+    fi = random.randint(0, len(samplefiles) - 1)
     if v: print('candidate file: {}'.format(samplefiles[fi]))
     t = attemptReadSampleFile(samplefiles[fi]) #check if valid file
     while t == None: #this file was invalid, try again
         del samplefiles[fi]
-        fi = random.randint(0, len(samplefiles))
-        t = attemptReadSampleFile(samplefiles[fi])
         if len(samplefiles) == 0: #no files are valid
             return (None, None)
+        fi = random.randint(0, len(samplefiles) - 1)
+        t = attemptReadSampleFile(samplefiles[fi])
     
     mt = time.ctime(os.path.getmtime(samplefiles[fi]))
     if v: print('{} ;\n       last modified {} :\n '.format(samplefiles[fi], mt))
@@ -136,7 +139,7 @@ def parseArgs():
     
     parser.add_argument('-p', '--paths', type=str, required=False, help='a path to scan', action='append', default=[])
     parser.add_argument('-o', '--output', type=str, required=False, help='output file')
-    parser.add_argument('-x', '--exclude', type=str, required=False, help='exclude files with pattern', action='append')
+    parser.add_argument('-x', '--exclude', type=str, required=False, help='exclude files with pattern', action='append', default=[])
     args = parser.parse_args()
 
     if (args.verbose): v = True
